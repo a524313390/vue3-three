@@ -6,7 +6,7 @@
             </el-aside>
             <el-container>
                 <el-header>Header</el-header>
-                <el-main>
+                <el-main id="main-wrap">
                     <router-view />
                 </el-main>
             </el-container>
@@ -36,6 +36,7 @@ import Aside from './Aside.vue'
 
     .el-main {
         position: relative;
+        overflow: hidden;
     }
 }
 </style>

@@ -16,7 +16,7 @@ import { ref } from 'vue';
 
 const router = useRouter();
 const menus = generateMenus(router.getRoutes());
-console.log(router.getRoutes());
+
 const route = useRoute();
 
 
