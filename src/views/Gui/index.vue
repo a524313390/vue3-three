@@ -9,8 +9,9 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import * as dat from 'dat.gui';
 import gsap from 'gsap';
+import { useGui } from '@/hooks/gui';
 const domRef = ref();
-const guiRef = ref<dat.GUI>();
+const guiRef = useGui();
 onMounted(() => {
     let dom = domRef.value;
     if (!dom) return;
@@ -42,9 +43,8 @@ onMounted(() => {
     animate();
 
 
-    const gui = new dat.GUI();
-    guiRef.value = gui;
-    gui.add(mesh.position, 'x').min(0).max(5).step(0.01).name("移动X轴位置").onChange((value) => {
+
+    guiRef.value?.add(mesh.position, 'x').min(0).max(5).step(0.01).name("移动X轴位置").onChange((value) => {
         console.log(`改变后的值${value}`);
 
     }).onFinishChange((value) => {
@@ -56,14 +56,14 @@ onMounted(() => {
             gsap.to(mesh.position, { x: 5, duration: 1, yoyo: true, repeat: -1 })
         }
     }
-    gui.addColor(params, 'color').onChange(value => {
+    guiRef.value?.addColor(params, 'color').onChange(value => {
         mesh.material.color.set(value);
     }).name("修改几何体颜色")
-    gui.add(mesh, 'visible').name("是否显示");
+    guiRef.value?.add(mesh, 'visible').name("是否显示");
     //立方体运动
-    gui.add(params, 'fn').name("立方体运动");
-    const folder = gui.addFolder("设置立方体");
-    folder.add(mesh.material, 'wireframe').name("是立方体是否显示线框")
+    guiRef.value?.add(params, 'fn').name("立方体运动");
+    const folder = guiRef.value?.addFolder("设置立方体");
+    folder && folder.add(mesh.material, 'wireframe').name("是立方体是否显示线框")
     // onresize 事件会在窗口被调整大小时发生
     window.onresize = function () {
         // 重置渲染器输出画布canvas尺寸
@@ -78,8 +78,4 @@ onMounted(() => {
     };
 })
 
-onUnmounted(() => {
-    guiRef.value?.destroy();
-
-})
 </script>
