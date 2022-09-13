@@ -6,9 +6,16 @@ attribute vec2 uv;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
-varying vec2 vuv;
 //将uv传递到片元着色器
+varying vec2 vuv;
+varying float vHeight;
+uniform float uTime;
 void main(){
     vuv=uv;
-    gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);
+    vec4 modelPosition=modelMatrix*vec4(position,1.);
+    //z轴动画
+    modelPosition.z=sin((modelPosition.x+uTime)*10.)*.1;
+    // modelPosition.z+=sin((modelPosition.y)+uTime*10.)*.1;
+    vHeight=modelPosition.z;
+    gl_Position=projectionMatrix*viewMatrix*modelPosition;
 }

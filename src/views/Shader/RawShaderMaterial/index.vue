@@ -10,8 +10,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import vertexShader from './vertex.glsl';
 import fragmentShader from './fragment.glsl';
 import { useGui } from '@/hooks/gui';
-
-
+import texImg from '@/assets/images/textures/ca.jpeg'
+import dat from 'dat.gui';
 const domRef = ref<HTMLDivElement>();
 const gui = useGui();
 onMounted(() => {
@@ -19,18 +19,38 @@ onMounted(() => {
 
 
     const scene = new THREE.Scene();
-
+    const loader = new THREE.TextureLoader();
+    const img = loader.load(texImg);
     const camera = new THREE.PerspectiveCamera(75, domRef.value?.clientWidth / domRef.value?.clientHeight, 0.1, 1000);
     camera.position.set(0, 0, 10);
     scene.add(camera);
+
+    const params = {
+        uSpeed: 10.0
+    }
+    gui.value?.add(params, 'uSpeed').name('改变频率').min(0).max(100)
     //原始着色器
     const shaderMaterial = new THREE.RawShaderMaterial({
         vertexShader,
-        fragmentShader
-    });
-    const plan = new THREE.PlaneBufferGeometry(1, 1)
+        fragmentShader,
+        // wireframe: true,
+        side: THREE.DoubleSide,
+        uniforms: {
+            uTime: {
+                value: 0
+            },
+            uTexture: {
+                value: img
+            },
+            uSpeed: {
+                value: params.uSpeed,
+            }
+        }
 
-    const material = new THREE.MeshBasicMaterial({ color: "#00ff00" });
+    });
+    const plan = new THREE.PlaneBufferGeometry(1, 1, 64, 64)
+
+
     const cube = new THREE.Mesh(plan, shaderMaterial);
     scene.add(cube)
     const axesHelper = new THREE.AxesHelper(10);
@@ -41,7 +61,13 @@ onMounted(() => {
 
     const control = new OrbitControls(camera, renderer.domElement);
     control.enableDamping = true;
+    const clock = new THREE.Clock();
     const animate = () => {
+        const t = clock.getElapsedTime();
+
+
+        shaderMaterial.uniforms.uTime.value = t;
+        shaderMaterial.uniforms.uSpeed.value = params.uSpeed;
         renderer.render(scene, camera)
         requestAnimationFrame(animate);
         control.update();

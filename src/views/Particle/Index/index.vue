@@ -24,6 +24,7 @@ onMounted(() => {
     const camera = new THREE.PerspectiveCamera(75, domRef.value?.clientWidth / domRef.value?.clientHeight, 0.1, 1000);
     camera.position.set(0, 0, 10);
     scene.add(camera);
+
     const shper = new THREE.SphereGeometry(1, 10, 10);
     const material = new THREE.MeshBasicMaterial({ wireframe: true, transparent: true });
     const mesh = new THREE.Mesh(shper, material)
